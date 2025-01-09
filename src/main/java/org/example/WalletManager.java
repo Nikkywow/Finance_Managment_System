@@ -18,6 +18,7 @@ public class WalletManager {
 
     public void addWallet(String login, Wallet wallet){
         this.wallets.put(login, wallet);
+        writeCSV(login);
     }
 
     public Wallet getWallet(String login){
@@ -33,33 +34,63 @@ public class WalletManager {
         }
     }
 
-    private void readCSV(){
+    public void readCSV() {
         try (Scanner scanner = new Scanner(new File(this.filepath))) {
-            List<List<String>> data = new ArrayList<>();
+            HashMap<String, Wallet> tempWallets = new HashMap<>();
+
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
-                List<String> row = Arrays.asList(line.split(","));
-                data.add(row);
-            }
-            Wallet wallet = new Wallet();
-            String currLogin = data.get(0).get(0);
-            String login = currLogin;
-            int i = 0;
-            while (currLogin.equals(login)){
-                login = data.get(i).get(0);
-                if (data.get(i).get(1).equals("i")){
-                    wallet.addIncomes(data.get(i).get(2), Float.parseFloat(data.get(i).get(3)));
-                } else if(data.get(i).get(1).equals("e")){
-                    wallet.addExpenses(data.get(i).get(2), Float.parseFloat(data.get(i).get(3)));
-                } else if (data.get(i).get(1).equals("b")) {
-                    wallet.addBudgets(data.get(i).get(2), Float.parseFloat(data.get(i).get(3)));
+                String[] columns = line.split(",");
+
+                if (columns.length < 4) {
+                    System.out.println("Ошибка в формате строки: " + line);
+                    continue; // Пропускаем некорректную строку
                 }
+
+                String login = columns[0];  // Логин пользователя
+                String type = columns[1];  // Тип записи (i, e, b)
+                String category = columns[2]; // Категория
+                Float value;
+
+                try {
+                    value = Float.parseFloat(columns[3]); // Значение
+                } catch (NumberFormatException e) {
+                    System.out.println("Некорректное значение: " + columns[3]);
+                    continue; // Пропускаем строку с ошибкой
+                }
+
+                // Получаем или создаём Wallet для текущего пользователя
+                Wallet wallet = tempWallets.getOrDefault(login, new Wallet());
+
+                // Заполняем Wallet в зависимости от типа записи
+                switch (type) {
+                    case "i":
+                        wallet.addIncomes(category, value);
+                        break;
+                    case "e":
+                        wallet.addExpenses(category, value);
+                        break;
+                    case "b":
+                        wallet.addBudgets(category, value);
+                        break;
+                    default:
+                        System.out.println("Неизвестный тип записи: " + type);
+                }
+
+                // Обновляем HashMap
+                tempWallets.put(login, wallet);
             }
 
+            // Обновляем wallets из временного хранилища
+            this.wallets = tempWallets;
+
+            System.out.println("Данные успешно загружены из файла " + this.filepath);
         } catch (IOException e) {
-            createCSV();
+            System.out.println("Ошибка чтения файла: " + this.filepath);
+            createCSV(); // Создаем файл, если его нет
         }
     }
+
     public void writeCSV(String login){
         Wallet wallet = getWallet(login);
         ArrayList<Pair<String, Float>> incomes = wallet.getIncomes();
@@ -100,6 +131,9 @@ public class WalletManager {
                 System.out.println("Ошибка: Данные не были записаны");
             }
         }
+    }
+    public boolean isEmpty(){
+        return wallets.isEmpty();
     }
 
 }

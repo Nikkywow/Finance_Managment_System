@@ -7,22 +7,32 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        test();
         Scanner scanner = new Scanner(System.in);
         AutorisationManager autorisationManager = new AutorisationManager();
         WalletManager walletManager = new WalletManager();
-        while(true){
+        walletManager.readCSV();
+        autorisationManager.readCSV();
+        if (walletManager.isEmpty()){
+            System.out.println("Вас приветствует Система управления личными финансами!");
+            User user = createAccount(scanner, autorisationManager);
+            Wallet wallet = walletCreation(scanner);
+            walletManager.addWallet(user.getLogin(), wallet);
+            wallet.printWallet();
+            userComandReader(scanner, user, wallet);
+        } else {
             System.out.println("Вас приветствует Система управления личными финансами!");
             System.out.print("У вас уже есть учетная запись в приложении? (д/н): ");
             String anw = scanner.nextLine();
             if (anw.equalsIgnoreCase("д")){
                 Pair<User, Boolean> autorisationResult = autorisation(scanner, autorisationManager);
+                User user = autorisationResult.getKey();
                 if(!autorisationResult.getValue()){
                     System.out.println("Пароль был введен неправильно 5 раз. Программа останавливается...");
                     return;
                 } else {
                     Wallet wallet = walletManager.getWallet(autorisationResult.getKey().getLogin());
                     wallet.printWallet();
+                    userComandReader(scanner, user, wallet);
                     //Должны выводиться доходы, расходы и бюджеты. Должно быть предложено добавить новые статьи, после добавления все пересчитывается.
                 }
             } else if(anw.equalsIgnoreCase("н")){
@@ -30,21 +40,29 @@ public class Main {
                 Wallet wallet = walletCreation(scanner);
                 walletManager.addWallet(user.getLogin(), wallet);
                 wallet.printWallet();
+                userComandReader(scanner, user, wallet);
+            } else {
+                System.out.println("Неверный формат ввода данных...");
             }
         }
     }
     public static Pair<User, Boolean> autorisation(Scanner scanner, AutorisationManager autorisationManager){
+        User user = new User();
         System.out.print("Введите логин: ");
         String login = scanner.nextLine();
-        System.out.print("Введите пароль: ");
-        String password = scanner.nextLine();
-        User user = new User(login, password);
-        if (autorisationManager.ispasswordcorrect(user)){
-            return new Pair<>(user, true);
+        for (int i = 0; i < 5; i++) {
+            System.out.print("Введите пароль: ");
+            String password = scanner.nextLine();
+            user = new User(login, password);
+
+            if (autorisationManager.ispasswordcorrect(user)) {
+                return new Pair<>(user, true);
+            }
+            System.out.println();
+            System.out.println("Неверно введенный пароль...");
+            System.out.println();
         }
-        else {
-            return new Pair<>(user, false);
-        }
+        return new Pair<>(user, false);
     }
 
     public static User createAccount(Scanner scanner, AutorisationManager autorisationManager) {
@@ -64,6 +82,7 @@ public class Main {
         }
         User user = new User(login, password1);
         autorisationManager.adduser(user);
+        System.out.println();
         return user;
     }
 
@@ -75,32 +94,54 @@ public class Main {
         return wallet;
     }
 
-
-    public static void test(){
-        Scanner scanner = new Scanner(System.in);
-        WalletManager walletManager = new WalletManager();
-        walletManager.createCSV();
-        Wallet wallet = new Wallet();
-        wallet.addIncomes("work", 100000F);
-        wallet.addIncomes("work", 29000F);
-        wallet.addIncomes("bonus", 23000F);
-        wallet.addIncomes("work", 299000F);
-        wallet.addExpenses("adu", 5000F);
-        wallet.addExpenses("adu", 15000F);
-        wallet.addExpenses("adu", 10000F);
-        wallet.addExpenses("adu", 20000F);
-        wallet.addExpenses("kids", 1000F);
-        wallet.addExpenses("food", 2444F);
-        wallet.addExpenses("food", 10000F);
-        wallet.addBudgets("food", 150000F);
-        wallet.addBudgets("adu", 300000F);
-        wallet.addBudgets("kids", 25000F);
-
-        wallet.addIncomesConsole(scanner);
-        wallet.printWallet();
-
-        walletManager.addWallet("nikita", wallet);
-        walletManager.writeCSV("nikita");
+    public static void userComandReader(Scanner scanner, User user, Wallet wallet){
+        while (true){
+            System.out.println("1. Вывести общие доходы/расходы/бюджет");
+            System.out.println("2. Вывести доходы/расходы/бюджет по категориям");
+            System.out.println("3. Вывести доходы/расходы/бюджет по выбранным категориям");
+            System.out.println("4. Выйти из приложения");
+            String ans = scanner.nextLine();
+            switch (ans){
+                case "1" :
+                    System.out.println("Общий доход: " + wallet.getOverallIncome());
+                    System.out.println("Общие расходы: " + wallet.getOverallExpense());
+                    System.out.println("Бюджет: " + wallet.getOverallBudget());
+                    System.out.println();
+                    break;
+                case "2" :
+                    wallet.printWallet();
+                    break;
+                case "3" :
+                    break;
+                case "4" :
+                    return;
+            }
+        }
     }
 
+    public void asw(Scanner scanner, AutorisationManager autorisationManager, WalletManager walletManager){
+        System.out.print("У вас уже есть учетная запись в приложении? (д/н): ");
+        String anw = scanner.nextLine();
+        if (anw.equalsIgnoreCase("д")){
+            Pair<User, Boolean> autorisationResult = autorisation(scanner, autorisationManager);
+            User user = autorisationResult.getKey();
+            if(!autorisationResult.getValue()){
+                System.out.println("Пароль был введен неправильно 5 раз. Программа останавливается...");
+                return;
+            } else {
+                Wallet wallet = walletManager.getWallet(autorisationResult.getKey().getLogin());
+                wallet.printWallet();
+                userComandReader(scanner, user, wallet);
+                //Должны выводиться доходы, расходы и бюджеты. Должно быть предложено добавить новые статьи, после добавления все пересчитывается.
+            }
+        } else if(anw.equalsIgnoreCase("н")){
+            User user = createAccount(scanner, autorisationManager);
+            Wallet wallet = walletCreation(scanner);
+            walletManager.addWallet(user.getLogin(), wallet);
+            wallet.printWallet();
+            userComandReader(scanner, user, wallet);
+        } else {
+            System.out.println("Неверный формат ввода данных...");
+        }
+    }
 }
