@@ -2,12 +2,16 @@ package org.example;
 
 import javafx.util.Pair;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 public class Wallet {
-    ArrayList<Pair<String, Float>> incomes = new ArrayList<>();
-    ArrayList<Pair<String, Float>> expenses = new ArrayList<>();
-    ArrayList<Pair<String, Float>> budgets = new ArrayList<>();
+    private ArrayList<Pair<String, Float>> incomes = new ArrayList<>();
+    private ArrayList<Pair<String, Float>> expenses = new ArrayList<>();
+    private ArrayList<Pair<String, Float>> budgets = new ArrayList<>();
+    private final String filename = "wallets.csv";
 
     public Wallet(){
     }
@@ -101,6 +105,19 @@ public class Wallet {
         return remainingBudgetPerState;
     }
 
+    public void addIncomesConsole(Scanner scanner, String login){
+        System.out.print("Введите количество новых статей доходов: ");
+        int iter = scanner.nextInt();
+        System.out.println("Далее вводите статью - значение через пробел: ");
+        scanner.nextLine();
+        for(int i = 0; i < iter; i++) {
+            String[] input;
+            input = scanner.nextLine().split(" ");
+            this.incomes.add(new Pair<>(input[0], Float.valueOf(input[1])));
+            addDataToCSV(login, "i", input[0], input[1]);
+        }
+    }
+
     public void addIncomesConsole(Scanner scanner){
         System.out.print("Введите количество новых статей доходов: ");
         int iter = scanner.nextInt();
@@ -110,6 +127,19 @@ public class Wallet {
             String[] input;
             input = scanner.nextLine().split(" ");
             this.incomes.add(new Pair<>(input[0], Float.valueOf(input[1])));
+        }
+    }
+
+    public void addExpensesConsole(Scanner scanner, String login){
+        System.out.print("Введите количество новых статей расходов: ");
+        int iter = scanner.nextInt();
+        System.out.println("Далее вводите статью - значение через пробел: ");
+        scanner.nextLine();
+        for(int i = 0; i < iter; i++) {
+            String[] input;
+            input = scanner.nextLine().split(" ");
+            this.expenses.add(new Pair<>(input[0], Float.valueOf(input[1])));
+            addDataToCSV(login, "e", input[0], input[1]);
         }
     }
 
@@ -124,6 +154,20 @@ public class Wallet {
             this.expenses.add(new Pair<>(input[0], Float.valueOf(input[1])));
         }
     }
+
+    public void addBudgetsConsole(Scanner scanner, String login){
+        System.out.print("Введите количество новых бюджетов по расходам: ");
+        int iter = scanner.nextInt();
+        System.out.println("Далее вводите статью - значение через пробел: ");
+        scanner.nextLine();
+        for(int i = 0; i < iter; i++) {
+            String[] input;
+            input = scanner.nextLine().split(" ");
+            this.budgets.add(new Pair<>(input[0], Float.valueOf(input[1])));
+            addDataToCSV(login, "b", input[0], input[1]);
+        }
+    }
+
     public void addBudgetsConsole(Scanner scanner){
         System.out.print("Введите количество новых бюджетов по расходам: ");
         int iter = scanner.nextInt();
@@ -135,6 +179,8 @@ public class Wallet {
             this.budgets.add(new Pair<>(input[0], Float.valueOf(input[1])));
         }
     }
+
+
 
     public void printWallet() {
         System.out.println("Общий доход: " + getOverallIncome());
@@ -177,5 +223,15 @@ public class Wallet {
         return this.budgets;
     }
 
-
+    public void addDataToCSV(String login, String category, String state, String sum){
+        try {
+            List<String> row = Arrays.asList(login, category, state, sum);
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(this.filename, true));
+            bufferedWriter.write(String.join(",", row));
+            bufferedWriter.newLine();
+            bufferedWriter.close();
+        } catch (IOException e) {
+            System.out.println("Ошибка: Данные не были записаны");
+        }
+    }
 }

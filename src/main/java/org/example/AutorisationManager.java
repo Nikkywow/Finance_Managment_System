@@ -13,8 +13,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class AutorisationManager {
-    HashMap<String, String> userdata = new HashMap<>();
-    final String filename = "user_data.csv";
+    private HashMap<String, String> userdata = new HashMap<>();
+    private final String filename = "user_data.csv";
 
     public AutorisationManager(){
     }
@@ -24,10 +24,15 @@ public class AutorisationManager {
     }
 
     public boolean ispasswordcorrect(User user){
-        if(userdata.get(user.getLogin()).equals(user.getPassword())) {
-            return true;
-        }
-        else {
+        try {
+
+
+            if (userdata.get(user.getLogin()).equals(user.getPassword())) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (NullPointerException e){
             return false;
         }
     }

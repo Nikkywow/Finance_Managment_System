@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class WalletManager {
-    HashMap<String, Wallet> wallets = new HashMap<>();
+    private  HashMap<String, Wallet> wallets = new HashMap<>();
     private String filepath = "wallets.csv";
 
     public WalletManager(){}
