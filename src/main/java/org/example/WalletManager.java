@@ -83,8 +83,6 @@ public class WalletManager {
 
             // Обновляем wallets из временного хранилища
             this.wallets = tempWallets;
-
-            System.out.println("Данные успешно загружены из файла " + this.filepath);
         } catch (IOException e) {
             System.out.println("Ошибка чтения файла: " + this.filepath);
             createCSV(); // Создаем файл, если его нет

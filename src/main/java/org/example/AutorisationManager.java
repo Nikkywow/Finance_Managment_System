@@ -68,4 +68,13 @@ public class AutorisationManager {
             System.out.println("Ошибка: Данные не были записаны");
         }
     }
+
+    public boolean isLoginAvailable(String login){
+        if(userdata.keySet().contains(login)){
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
 }

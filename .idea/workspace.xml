@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9b7067ea-ba36-40f8-84fb-052e382bbca1" name="Changes" comment="ready to work">
+    <list default="true" id="9b7067ea-ba36-40f8-84fb-052e382bbca1" name="Changes" comment="ready to work 2.0">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/AutorisationManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/AutorisationManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/User.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Wallet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Wallet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/WalletManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/WalletManager.java" afterDir="false" />
     </list>
@@ -27,6 +26,12 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "Nikkywow"
+  }
+}]]></component>
   <component name="GithubPullRequestsUISettings"><![CDATA[{
   "selectedUrlAndAccountId": {
     "url": "https://github.com/Nikkywow/Finance_Managment_System.git",
@@ -116,7 +121,15 @@
       <option name="project" value="LOCAL" />
       <updated>1736458804497</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="ready to work 2.0">
+      <option name="closed" value="true" />
+      <created>1736516814120</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1736516814120</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -134,6 +147,7 @@
     <MESSAGE value="initial commit" />
     <MESSAGE value="readCSV 1.0" />
     <MESSAGE value="ready to work" />
-    <option name="LAST_COMMIT_MESSAGE" value="ready to work" />
+    <MESSAGE value="ready to work 2.0" />
+    <option name="LAST_COMMIT_MESSAGE" value="ready to work 2.0" />
   </component>
 </project>

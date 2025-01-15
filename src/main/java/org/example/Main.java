@@ -2,6 +2,7 @@ package org.example;
 
 import javafx.util.Pair;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
@@ -13,11 +14,12 @@ public class Main {
         autorisationManager.readCSV();
         if (walletManager.isEmpty()){
             System.out.println("Вас приветствует Система управления личными финансами!");
+            System.out.println();
             User user = createAccount(scanner, autorisationManager);
             Wallet wallet = walletCreation(scanner);
             walletManager.addWallet(user.getLogin(), wallet);
             wallet.printWallet();
-            userComandReader(scanner, user, wallet);
+            userComandReader(scanner, user, wallet, autorisationManager, walletManager);
         } else {
             System.out.println("Вас приветствует Система управления личными финансами!");
             asw(scanner,autorisationManager, walletManager);
@@ -27,6 +29,13 @@ public class Main {
         User user = new User();
         System.out.print("Введите логин: ");
         String login = scanner.nextLine();
+        if (autorisationManager.isLoginAvailable(login)) {
+            System.out.println("Такого логина не существует...");
+            System.out.println("Повторите ввод...");
+            System.out.println();
+            return autorisation(scanner, autorisationManager);
+        }
+
         for (int i = 0; i < 5; i++) {
             System.out.print("Введите пароль: ");
             String password = scanner.nextLine();
@@ -34,9 +43,11 @@ public class Main {
             user = new User(login, password);
 
             if (autorisationManager.ispasswordcorrect(user)) {
+                System.out.printf("Добро пожаловать, %s!", login);
+                System.out.println();
+                System.out.println();
                 return new Pair<>(user, true);
             }
-            System.out.println();
             System.out.println("Неверно введенный пароль...");
             System.out.println();
         }
@@ -44,8 +55,16 @@ public class Main {
     }
 
     public static User createAccount(Scanner scanner, AutorisationManager autorisationManager) {
+        System.out.println("Создание нового пользователя...");
         System.out.print("Введите логин: ");
-        String login = scanner.nextLine();
+        String login;
+        login = scanner.nextLine();
+        while (!autorisationManager.isLoginAvailable(login)) {
+            System.out.println();
+            System.out.println("Введенный вами логин занят.");
+            System.out.print("Придумайте другой логин: ");
+            login = scanner.nextLine();
+        }
         String password1;
         while (true) {
             System.out.print("Введите пароль: ");
@@ -55,6 +74,7 @@ public class Main {
             if (password1.equals(password2)) {
                 break;
             } else {
+                System.out.println();
                 System.out.println("Введенные вами пароли не совпадают, повторите ввод...");
             }
         }
@@ -64,7 +84,7 @@ public class Main {
         return user;
     }
 
-    public static Wallet walletCreation(Scanner scanner){
+    public static Wallet walletCreation(Scanner scanner) throws InputMismatchException {
         Wallet wallet = new Wallet();
         wallet.addIncomesConsole(scanner);
         wallet.addExpensesConsole(scanner);
@@ -72,13 +92,16 @@ public class Main {
         return wallet;
     }
 
-    public static void userComandReader(Scanner scanner, User user, Wallet wallet){
+    public static void userComandReader(Scanner scanner, User user, Wallet wallet, AutorisationManager autorisationManager, WalletManager walletManager){
         while (true){
             System.out.println("1. Вывести суммарные доходы/расходы/бюджет");
             System.out.println("2. Вывести доходы/расходы/бюджет по категориям");
             System.out.println("3. Вывести доходы/расходы/бюджет по выбранным категориям");
             System.out.println("4. Добавить доходы/расходы/бюджеты по выбранным категориям");
-            System.out.println("5. Выйти из приложения");
+            System.out.println("5. Выйти из сессии");
+            System.out.println("6. Выйти из приложения");
+            System.out.print("Выберите действие (введите номер): ");
+            System.out.println();
             String ans = scanner.nextLine();
             switch (ans){
                 case "1" :
@@ -91,11 +114,39 @@ public class Main {
                     wallet.printWallet();
                     break;
                 case "3" :
+                    System.out.println("1. Вывести Доходы по выбранным категориям");
+                    System.out.println("2. Вывести Расходы по выбранным категориям");
+                    System.out.println("3. Вывести Бюджеты по выбранным категориям");
+                    System.out.print("Выберите действие (введите номер): ");
+                    System.out.println();
+                    ans = scanner.nextLine();
+                    switch (ans){
+                        case "1":
+                            System.out.println("Введите категории через пробел:");
+                            String cats = scanner.nextLine();
+                            wallet.printIncomesByStates(cats);
+                            break;
+                        case "2":
+                            System.out.println("Введите категории через пробел:");
+                            cats = scanner.nextLine();
+                            wallet.printExpenseByStates(cats);
+                            break;
+                        case "3":
+                            System.out.println("Введите категории через пробел:");
+                            cats = scanner.nextLine();
+                            wallet.printBudgetByStates(cats);
+                            break;
+                        default:
+                            System.out.println("Неверный формат ввода данных...");
+                            System.out.println();
+                            break;
+                    }
                     break;
                 case "4" :
-                    System.out.println("1. Добавить доходы");
+                    System.out.println("1. Добавить Доходы");
                     System.out.println("2. Добавить Расходы");
-                    System.out.println("3. Добавить бюджеты");
+                    System.out.println("3. Добавить Бюджеты");
+                    System.out.print("Выберите действие (введите номер): ");
                     System.out.println();
                     ans = scanner.nextLine();
                     switch (ans){
@@ -114,8 +165,14 @@ public class Main {
                             break;
                     }
                     break;
-                case "5" :
+                case "5":
+                    System.out.println("Выход из сессии...");
+                    System.out.println();
+                    asw(scanner, autorisationManager, walletManager);
                     return;
+                case "6" :
+                    System.out.println("Выход из приложения...");
+                    System.exit(0);
                 default:
                     System.out.println("Неверный формат ввода данных...");
                     System.out.println();
@@ -126,6 +183,7 @@ public class Main {
     public static void asw(Scanner scanner, AutorisationManager autorisationManager, WalletManager walletManager){
         System.out.print("У вас уже есть учетная запись в приложении? (д/н): ");
         String anw = scanner.nextLine();
+        System.out.println();
         if (anw.equalsIgnoreCase("д")){
             Pair<User, Boolean> autorisationResult = autorisation(scanner, autorisationManager);
             User user = autorisationResult.getKey();
@@ -135,14 +193,20 @@ public class Main {
             } else {
                 Wallet wallet = walletManager.getWallet(autorisationResult.getKey().getLogin());
                 wallet.printWallet();
-                userComandReader(scanner, user, wallet);
+                userComandReader(scanner, user, wallet, autorisationManager, walletManager);
             }
         } else if(anw.equalsIgnoreCase("н")){
             User user = createAccount(scanner, autorisationManager);
-            Wallet wallet = walletCreation(scanner);
+            Wallet wallet;
+            try {
+                wallet = walletCreation(scanner);
+            } catch (InputMismatchException e) {
+                wallet = walletCreation(scanner);
+            }
             walletManager.addWallet(user.getLogin(), wallet);
+            System.out.println();
             wallet.printWallet();
-            userComandReader(scanner, user, wallet);
+            userComandReader(scanner, user, wallet, autorisationManager, walletManager);
         } else {
             System.out.println();
             System.out.println("Неверный формат ввода данных...");
