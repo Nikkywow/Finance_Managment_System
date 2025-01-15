@@ -8,32 +8,32 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        AutorisationManager autorisationManager = new AutorisationManager();
+        AuthorisationManager authorisationManager = new AuthorisationManager();
         WalletManager walletManager = new WalletManager();
         walletManager.readCSV();
-        autorisationManager.readCSV();
+        authorisationManager.readCSV();
         if (walletManager.isEmpty()){
             System.out.println("Вас приветствует Система управления личными финансами!");
             System.out.println();
-            User user = createAccount(scanner, autorisationManager);
+            User user = createAccount(scanner, authorisationManager);
             Wallet wallet = walletCreation(scanner);
             walletManager.addWallet(user.getLogin(), wallet);
             wallet.printWallet();
-            userComandReader(scanner, user, wallet, autorisationManager, walletManager);
+            userCommandReader(scanner, user, wallet, authorisationManager, walletManager);
         } else {
             System.out.println("Вас приветствует Система управления личными финансами!");
-            asw(scanner,autorisationManager, walletManager);
+            asw(scanner,authorisationManager, walletManager);
         }
     }
-    public static Pair<User, Boolean> autorisation(Scanner scanner, AutorisationManager autorisationManager){
+    public static Pair<User, Boolean> authorisation(Scanner scanner, AuthorisationManager authorisationManager){
         User user = new User();
         System.out.print("Введите логин: ");
         String login = scanner.nextLine();
-        if (autorisationManager.isLoginAvailable(login)) {
+        if (authorisationManager.isLoginAvailable(login)) {
             System.out.println("Такого логина не существует...");
             System.out.println("Повторите ввод...");
             System.out.println();
-            return autorisation(scanner, autorisationManager);
+            return authorisation(scanner, authorisationManager);
         }
 
         for (int i = 0; i < 5; i++) {
@@ -42,7 +42,7 @@ public class Main {
             System.out.println();
             user = new User(login, password);
 
-            if (autorisationManager.ispasswordcorrect(user)) {
+            if (authorisationManager.ispasswordcorrect(user)) {
                 System.out.printf("Добро пожаловать, %s!", login);
                 System.out.println();
                 System.out.println();
@@ -54,12 +54,12 @@ public class Main {
         return new Pair<>(user, false);
     }
 
-    public static User createAccount(Scanner scanner, AutorisationManager autorisationManager) {
+    public static User createAccount(Scanner scanner, AuthorisationManager authorisationManager) {
         System.out.println("Создание нового пользователя...");
         System.out.print("Введите логин: ");
         String login;
         login = scanner.nextLine();
-        while (!autorisationManager.isLoginAvailable(login)) {
+        while (!authorisationManager.isLoginAvailable(login)) {
             System.out.println();
             System.out.println("Введенный вами логин занят.");
             System.out.print("Придумайте другой логин: ");
@@ -79,7 +79,7 @@ public class Main {
             }
         }
         User user = new User(login, password1);
-        autorisationManager.adduser(user);
+        authorisationManager.adduser(user);
         System.out.println();
         return user;
     }
@@ -92,7 +92,7 @@ public class Main {
         return wallet;
     }
 
-    public static void userComandReader(Scanner scanner, User user, Wallet wallet, AutorisationManager autorisationManager, WalletManager walletManager){
+    public static void userCommandReader(Scanner scanner, User user, Wallet wallet, AuthorisationManager autorisationManager, WalletManager walletManager){
         while (true){
             System.out.println("1. Вывести суммарные доходы/расходы/бюджет");
             System.out.println("2. Вывести доходы/расходы/бюджет по категориям");
@@ -180,20 +180,19 @@ public class Main {
         }
     }
 
-    public static void asw(Scanner scanner, AutorisationManager autorisationManager, WalletManager walletManager){
+    public static void asw(Scanner scanner, AuthorisationManager autorisationManager, WalletManager walletManager){
         System.out.print("У вас уже есть учетная запись в приложении? (д/н): ");
         String anw = scanner.nextLine();
         System.out.println();
         if (anw.equalsIgnoreCase("д")){
-            Pair<User, Boolean> autorisationResult = autorisation(scanner, autorisationManager);
+            Pair<User, Boolean> autorisationResult = authorisation(scanner, autorisationManager);
             User user = autorisationResult.getKey();
             if(!autorisationResult.getValue()){
                 System.out.println("Пароль был введен неправильно 5 раз. Программа останавливается...");
-                return;
             } else {
                 Wallet wallet = walletManager.getWallet(autorisationResult.getKey().getLogin());
                 wallet.printWallet();
-                userComandReader(scanner, user, wallet, autorisationManager, walletManager);
+                userCommandReader(scanner, user, wallet, autorisationManager, walletManager);
             }
         } else if(anw.equalsIgnoreCase("н")){
             User user = createAccount(scanner, autorisationManager);
@@ -206,7 +205,7 @@ public class Main {
             walletManager.addWallet(user.getLogin(), wallet);
             System.out.println();
             wallet.printWallet();
-            userComandReader(scanner, user, wallet, autorisationManager, walletManager);
+            userCommandReader(scanner, user, wallet, autorisationManager, walletManager);
         } else {
             System.out.println();
             System.out.println("Неверный формат ввода данных...");

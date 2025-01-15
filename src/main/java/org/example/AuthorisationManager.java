@@ -12,11 +12,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
-public class AutorisationManager {
+public class AuthorisationManager {
     private HashMap<String, String> userdata = new HashMap<>();
     private final String filename = "user_data.csv";
 
-    public AutorisationManager(){
+    public AuthorisationManager(){
     }
     public void adduser(User user){
         userdata.put(user.getLogin(), user.getPassword());
